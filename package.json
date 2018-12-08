@@ -1,0 +1,24 @@
+{
+  "name": "testalarm",
+  "version": "1.0.0",
+  "description": "Testing project to figure out how to raise alarm requests from a custom Alexa skill.",
+  "main": "index.js",
+  "dependencies": {
+    "ask-sdk": "^2.3.0",
+    "axios": "^0.18.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unnecessaryroughness/alexatestalarm.git"
+  },
+  "author": "Mark Tonks",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/unnecessaryroughness/alexatestalarm/issues"
+  },
+  "homepage": "https://github.com/unnecessaryroughness/alexatestalarm#readme"
+}
