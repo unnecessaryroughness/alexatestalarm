@@ -2,11 +2,33 @@
 
 const Alexa = require('ask-sdk');
 const skillBuilder = Alexa.SkillBuilders.standard();
+const Axios = require('axios')
 
 const SKILL_NAME = 'Test Alarm';
 const HELP_MESSAGE = 'You can say set alarm, or, you can say exit... What can I help you with?';
 const HELP_REPROMPT = 'What can I help you with?';
 const STOP_MESSAGE = 'Goodbye!';
+
+const REMINDER_ENDPOINT = '/v1/alerts/reminders'
+
+
+const callAPI = (token, url, payload = null) => new Promise((resolve, reject) => {
+  if (!token) reject(new Error('Error calling URL - user is not logged in'))
+  if (!url) reject(new Error('Error calling URL - missing URL string'))
+  let config = {
+    url: url,
+    method: 'post',
+    headers: {'Authorization': 'bearer ' + token, 
+              'Content-Type': 'application/json'},
+    data: payload
+  }
+  console.log('API Call Configuration -->', config)
+  Axios.request(config)
+    .then((response) => resolve(response))
+    .catch((error) => reject(error))
+})
+
+
 
 const SetAlarmHandler = {
     canHandle(handlerInput) {
@@ -16,10 +38,39 @@ const SetAlarmHandler = {
           && request.intent.name === 'setAlarm')
     },
     handle(handlerInput) {
-        return handlerInput.responseBuilder
-            .speak('literal here as a placeholder')
-            .withSimpleCard(SKILL_NAME, 'test message')
-            .getResponse();
+      let currentTime = new Date();
+      let useBody = {
+          requestTime : currentTime.toISOString(),
+          trigger: {
+               type : "SCHEDULED_RELATIVE",
+               offsetInSeconds : 30,
+          },
+          alertInfo: {
+               spokenInfo: {
+                   content: [{
+                       locale: "en-US", 
+                       text: "test the reminder function"
+                   }]
+               }
+           },
+           pushNotification : {                            
+                status : "ENABLED"         
+           }
+        }
+      let endpoint = handlerInput.requestEnvelope.context.System.apiEndpoint  
+      
+      callAPI(handlerInput.requestEnvelope.context.System.apiAccessToken, endpoint + REMINDER_ENDPOINT, useBody)
+        .then(apiResult => {
+          console.log('successfully added reminder', apiResult)
+        })
+        .catch(apiErr => {
+          console.log('oh bugger - an error occurred ->', apiErr)
+        })
+
+      return handlerInput.responseBuilder
+        .speak('I have attempted to add a reminder')
+        .withSimpleCard(SKILL_NAME, 'reminder requested')
+        .getResponse();
     }
 };
 
