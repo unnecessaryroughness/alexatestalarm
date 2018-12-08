@@ -4,5 +4,5 @@ Testing project to figure out how to raise alarm requests from a custom Alexa sk
 
 Once successful(!) the technique will be reused to implement a more impressive skill :) 
 
-Built using the serverless framework.
+Built & deployed using the serverless framework.
 
